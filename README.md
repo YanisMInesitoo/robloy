@@ -9,6 +9,29 @@ Robloy es un juego hecho en C inspirado en Roblox para Game Boy Advance. 🕹️
 > 🔔 @SoyJhosfra  
 > 🔔 @SoyJhosfraPRIME
 
+---
+
+💾 **Cartucho físico:** 37,99 €
+- 💵 USD: $41.50
+- 💷 GBP: £32.00
+- 💴 JPY: ¥6,500
+- 🇭🇰 HKD: HK$325
+- 🇨🇦 CAD: $57.00
+- 🇨🇳 CNY: ¥300
+- 🇷🇺 RUB: ₽3,800
+- 🇺🇦 UAH: ₴1,700
+- 🇲🇽 MXN: $770
+- 🇦🇷 ARS: $38,000
+- 🇻🇪 VES: Bs.1,500
+- 🇨🇴 COP: $160,000
+- 🇵🇸 ILS: ₪150
+
+---
+
+💎 **Premium:** 3,200 monedas (compra dentro del juego)
+
+---
+
 ## 🚀 Características principales
 - 🏠 Menú principal con el título "Robloy" centrado.
 - 🔑 Iniciar sesión y crear cuenta con teclado virtual.
@@ -17,7 +40,7 @@ Robloy es un juego hecho en C inspirado en Roblox para Game Boy Advance. 🕹️
 - 🏆 Premios, ítems y recompensas exclusivas.
 - 🛒 Tienda con compra/equipamiento de ítems.
 - 💸 Sistema de monedas y Robux, paquetes y promocodes.
-- ⭐ Usuario premium: compra con Robux, ventajas exclusivas, icono especial.
+- ⭐ Usuario premium: compra con 3,200 monedas, ventajas exclusivas, icono especial.
 - 🎮 Menú de juegos con minijuegos jugables:
   - ⚔️ RIVALES HACHAS: combate por turnos.
   - 🪙 OBBY COINS: 70 niveles, recompensa al completar.
@@ -32,10 +55,20 @@ Robloy es un juego hecho en C inspirado en Roblox para Game Boy Advance. 🕹️
 - 🏆 Ranking de mejores jugadores (próximamente).
 - 🧑‍💻 Código fuente organizado y fácil de modificar.
 
+## 🌐 ¿Se puede jugar online?
+No, actualmente **no se puede jugar online de ninguna forma** en Robloy (versión 1.002). El modo online se intentará implementar en la versión 1.003. Por ahora, todo el progreso, minijuegos y funciones son completamente offline.
+
 ## 🛠️ Compilación
 1. 📦 Instala devkitPro: https://devkitpro.org/
-2. 💻 Abre PowerShell en la carpeta del proyecto.
-3. 🏗️ Ejecuta `make` para compilar el juego.
+2. 💻 Abre la terminal MSYS2 de devkitPro.
+3. 📂 Navega a la carpeta del proyecto:
+   ```sh
+   cd /c/Users/Yanis/Documents/robloy
+   ```
+4. 🏗️ Ejecuta:
+   ```sh
+   make
+   ```
 
 ## 📁 Estructura del proyecto
 - 📂 src/: Código fuente en C.

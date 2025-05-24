@@ -2,11 +2,24 @@
 #include <gba_console.h>
 #include <gba_video.h>
 #include <gba_input.h>
-#include <gba_system.h>
+#include <gba_systemcalls.h> // Cambiado de <gba_system.h> a <gba_systemcalls.h>
+#include <gba_interrupt.h> // Añadido para irqInit, irqEnable y IRQ_VBLANK
 #include <stdio.h>
 #include <stdlib.h> // Para rand()
-#include <gba_file.h> // Para operaciones de archivo en GBA (usando libfat)
 #include <string.h>
+
+// Prototipo para evitar declaración implícita
+typedef unsigned short u16;
+void consoleClearRegion(int left, int top, int width, int height);
+
+// Implementación mínima de consoleClearRegion para GBA (borra la pantalla de texto)
+void consoleClearRegion(int left, int top, int width, int height) {
+    for (int y = top; y < top + height; y++) {
+        for (int x = left; x < left + width; x++) {
+            iprintf("\x1b[%d;%dH ", y, x);
+        }
+    }
+}
 
 // --- Estructuras y defines ---
 #define NUM_ITEMS 10
@@ -58,14 +71,41 @@ int num_promocodes = 0;
 UsuarioEspecial usuarios_especiales[MAX_USUARIOS_ESPECIALES];
 int num_usuarios_especiales = 0;
 
+// --- Prototipos de funciones principales ---
+void input_password();
+void input_username();
+void show_user_home(const char* username);
+void show_settings(const char* username);
+void show_shop(const char* username);
+void show_robux(const char* username);
+void show_games(const char* username);
+void juego_rivales_hachas(const char* username);
+void juego_obby_coins(const char* username);
+void save_progress();
 void draw_menu();
 void draw_keyboard(char input[7], int cursor_row, int cursor_col);
+
+// --- Definición de teclado virtual para login ---
+#define KEYBOARD_ROWS 3
+#define KEYBOARD_COLS 10
+const char keyboard[KEYBOARD_ROWS][KEYBOARD_COLS+1] = {
+    "ABCDEF1234",
+    "GHIJKL5678",
+    "MNOPQR90ZX"
+};
+
+// --- Funciones de carga vacías para evitar error de linker ---
+void load_account() {}
+void load_promocodes() {}
+void load_usuarios_especiales() {}
 
 // --- Funciones de carga ---
 void load_account();
 void load_progress();
 void load_promocodes();
 void load_usuarios_especiales();
+
+#define consoleClear() consoleClearRegion(0,0,30,32)
 
 int main(void) {
     // Inicializa la consola de texto
@@ -424,7 +464,7 @@ void show_robux(const char* username) {
     const int precios[5] = {100, 350, 1500, 11000, 25000}; // Precios en monedas
     int salir = 0;
     int premium_option = num_paquetes; // Opción extra para premium
-    int premium_precio = 800; // Precio en Robux para premium
+    int premium_precio = 3200; // Premium ahora cuesta 3200 monedas
     while (!salir) {
         consoleClear();
         iprintf("\x1b[2;10H--- Comprar Robux ---");
@@ -437,7 +477,7 @@ void show_robux(const char* username) {
         if (es_premium) {
             iprintf("\x1b[%d;8H[PREMIUM ACTIVADO]", 6+num_paquetes*2);
         } else {
-            iprintf("\x1b[%d;8HComprar Premium - %d R$", 6+num_paquetes*2, premium_precio);
+            iprintf("\x1b[%d;8HComprar Premium - %d monedas", 6+num_paquetes*2, premium_precio);
             if (option == premium_option) draw_cursor(6, 6+num_paquetes*2);
         }
         iprintf("\x1b[14;4HA: Comprar  B: Volver  Arriba/Abajo: Mover");
@@ -447,7 +487,9 @@ void show_robux(const char* username) {
         int max_option = es_premium ? num_paquetes-1 : num_paquetes;
         if ((keys & KEY_DOWN) && option < max_option) option++;
         if ((keys & KEY_UP) && option > 0) option--;
-        if (keys & KEY_B) salir = 1;
+        if (keys & KEY_B) {
+            salir = 1;
+        }
         if (keys & KEY_A) {
             if (option < num_paquetes) {
                 if (saldo_monedas >= precios[option]) {
@@ -459,13 +501,13 @@ void show_robux(const char* username) {
                     iprintf("\x1b[16;4HNo tienes suficientes monedas");
                 }
             } else if (option == premium_option && !es_premium) {
-                if (saldo_robux >= premium_precio) {
-                    saldo_robux -= premium_precio;
+                if (saldo_monedas >= premium_precio) {
+                    saldo_monedas -= premium_precio;
                     es_premium = 1;
                     save_progress();
                     iprintf("\x1b[16;4H¡Ahora eres usuario PREMIUM!");
                 } else {
-                    iprintf("\x1b[16;4HNo tienes suficientes Robux para premium");
+                    iprintf("\x1b[16;4HNo tienes suficientes monedas para premium");
                 }
             }
             VBlankIntrWait();
@@ -576,46 +618,50 @@ void redeem_promocode(const char* username) {
 
 void show_games(const char* username) {
     int option = 0;
-    const char* juegos[] = {
-        "Obby de lava",
-        "Escape del Noob",
-        "Simulador de Robux",
-        "Tycoon de Casas",
-        "Aventura en la Jungla",
-        "RIVALES HACHAS",
-        "OBBY COINS"
-    };
-    int num_juegos = sizeof(juegos)/sizeof(juegos[0]);
-    int salir = 0;
-    while (!salir) {
-        consoleClear();
-        iprintf("\x1b[2;10H--- Juegos ---");
-        for (int i = 0; i < num_juegos; i++) {
-            iprintf("\x1b[%d;8H%s", 5+i, juegos[i]);
-            if (option == i) draw_cursor(6, 5+i);
-        }
-        iprintf("\x1b[20;2HA: Jugar  B: Volver  Arriba/Abajo: Mover");
-        VBlankIntrWait();
-        scanKeys();
-        u16 keys = keysDownRepeat();
-        if ((keys & KEY_DOWN) && option < num_juegos-1) option++;
-        if ((keys & KEY_UP) && option > 0) option--;
-        if (keys & KEY_B) salir = 1;
-        if (keys & KEY_A) {
-            if (option == num_juegos-2) {
-                juego_rivales_hachas(username);
-            } else if (option == num_juegos-1) {
-                juego_obby_coins(username);
-            } else {
-                consoleClear();
-                iprintf("\x1b[10;6HCargando: %s...", juegos[option]);
-                iprintf("\x1b[12;2HPulsa cualquier botón para volver");
-                VBlankIntrWait();
-                while (1) { scanKeys(); if (keysDown()) break; VBlankIntrWait(); }
+    // Declarar los juegos y variables dentro del bucle principal para evitar errores de ámbito
+    while (1) {
+        const char* juegos[] = {
+            "Obby de lava",
+            "Escape del Noob",
+            "Simulador de Robux",
+            "Tycoon de Casas",
+            "Aventura en la Jungla",
+            "RIVALES HACHAS",
+            "OBBY COINS"
+        };
+        int num_juegos = sizeof(juegos)/sizeof(juegos[0]);
+        int salir = 0;
+        while (!salir) {
+            consoleClear();
+            iprintf("\x1b[2;10H--- Juegos ---");
+            for (int i = 0; i < num_juegos; i++) {
+                iprintf("\x1b[%d;8H%s", 5+i, juegos[i]);
+                if (option == i) draw_cursor(6, 5+i);
+            }
+            iprintf("\x1b[20;2HA: Jugar  B: Volver  Arriba/Abajo: Mover");
+            VBlankIntrWait();
+            scanKeys();
+            u16 keys = keysDownRepeat();
+            if ((keys & KEY_DOWN) && option < num_juegos-1) option++;
+            if ((keys & KEY_UP) && option > 0) option--;
+            if (keys & KEY_B) salir = 1;
+            if (keys & KEY_A) {
+                if (option == num_juegos-2) {
+                    juego_rivales_hachas(username);
+                } else if (option == num_juegos-1) {
+                    juego_obby_coins(username);
+                } else {
+                    consoleClear();
+                    iprintf("\x1b[10;6HCargando: %s...", juegos[option]);
+                    iprintf("\x1b[12;2HPulsa cualquier botón para volver");
+                    VBlankIntrWait();
+                    while (1) { scanKeys(); if (keysDown()) break; VBlankIntrWait(); }
+                }
             }
         }
+        show_user_home(username);
+        break;
     }
-    show_user_home(username);
 }
 
 void juego_rivales_hachas(const char* username) {
