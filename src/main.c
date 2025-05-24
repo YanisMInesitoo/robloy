@@ -38,6 +38,7 @@ char last_username[13] = "";
 char last_password[7] = "";
 int saldo_monedas = 1000;
 int saldo_robux = 0;
+int es_premium = 0; // 0: normal, 1: premium
 int tiene_sombrero = 0, tiene_zapas = 0, tiene_sombrero_oro = 0, tiene_zapas_oro = 0;
 int tiene_capa = 0, tiene_espada = 0, tiene_mascara = 0;
 ItemTienda items[NUM_ITEMS] = {
@@ -145,10 +146,17 @@ void input_password() {
 }
 
 void save_account(const char* username, const char* password) {
+    // Guardar en account.txt (última cuenta usada)
     FILE* f = fopen("account.txt", "w");
     if (f) {
         fprintf(f, "%s\n%s\n", username, password);
         fclose(f);
+    }
+    // Añadir a usuarios.txt (todas las cuentas)
+    FILE* fu = fopen("usuarios.txt", "a");
+    if (fu) {
+        fprintf(fu, "%s:%s\n", username, password);
+        fclose(fu);
     }
 }
 
@@ -257,12 +265,29 @@ void show_user_home(const char* username) {
     while (1) {
         consoleClear();
         iprintf("\x1b[0;24HInicio");
-        iprintf("\x1b[1;24H%s", username);
-        iprintf("\x1b[0;32H[R$]");
-        iprintf("\x1b[0;37H[CFG]");
-        iprintf("\x1b[0;43H[SHOP]");
+        // Mostrar nombre de usuario con icono premium si corresponde
+        if (es_premium) {
+            iprintf("\x1b[1;24H%s \x1b[33m★\x1b[37m", username); // Estrella dorada como icono premium
+        } else {
+            iprintf("\x1b[1;24H%s", username);
+        }
+        if (es_premium) iprintf("\x1b[1;36H[PREMIUM]");
+        // Dibujo de Robux (amarillo/dorado, usando caracteres ASCII)
+        iprintf("\x1b[0;32H\x1b[33m  ▄▄▄  \x1b[37m");
+        iprintf("\x1b[1;32H\x1b[33m ▀   ▀ \x1b[37m");
+        iprintf("\x1b[2;32H\x1b[33m| R$ |");
+        iprintf("\x1b[3;32H ▀▀▀  \x1b[37m");
+        // Icono de configuración (mitad tuerca, mitad bolsa)
+        iprintf("\x1b[0;37H\x1b[36m(⚙️/🛍️)\x1b[37m");
+        // Icono de tienda (mitad bolsa, mitad tuerca)
+        iprintf("\x1b[0;43H\x1b[36m(🛍️/⚙️)\x1b[37m");
         iprintf("\x1b[0;28H[JUEGOS]");
         iprintf("\x1b[2;12H¡Bienvenido, %s!", username);
+        if (es_premium) {
+            iprintf("\x1b[3;12H¡Ventajas premium activas!");
+            iprintf("\x1b[4;12H- Ítem exclusivo: Corona Premium");
+            iprintf("\x1b[5;12H- +10%% Robux en compras");
+        }
         iprintf("\x1b[4;2HPremios/Ítems: ");
         int y = 5;
         for (int i = 0; i < NUM_ITEMS; i++) {
@@ -270,6 +295,9 @@ void show_user_home(const char* username) {
                 iprintf("\x1b[%d;4H%s", y++, items[i].nombre);
                 if (items[i].equipado) iprintf(" (Equipado)");
             }
+        }
+        if (es_premium) {
+            iprintf("\x1b[%d;4HCorona Premium (Exclusivo)", y++);
         }
         if (tiene_mascara) { iprintf("\x1b[%d;4HMáscara", y++); }
         iprintf("\x1b[22;2HUsa la cruceta y A para elegir. Start: Menú");
@@ -290,6 +318,13 @@ void show_user_home(const char* username) {
             save_progress();
             draw_menu();
             return;
+        }
+        // Guardar progreso con SELECT + START
+        if ((keys & KEY_START) && (keys & KEY_SELECT)) {
+            save_progress();
+            iprintf("\x1b[20;2HProgreso guardado!");
+            VBlankIntrWait();
+            for (int i = 0; i < 60; i++) VBlankIntrWait();
         }
     }
 }
@@ -377,6 +412,64 @@ void show_shop(const char* username) {
                 }
             }
             save_progress();
+        }
+    }
+    show_user_home(username);
+}
+
+void show_robux(const char* username) {
+    int option = 0;
+    const int num_paquetes = 5;
+    const int robux_packs[5] = {50, 200, 1000, 10000, 25300};
+    const int precios[5] = {100, 350, 1500, 11000, 25000}; // Precios en monedas
+    int salir = 0;
+    int premium_option = num_paquetes; // Opción extra para premium
+    int premium_precio = 800; // Precio en Robux para premium
+    while (!salir) {
+        consoleClear();
+        iprintf("\x1b[2;10H--- Comprar Robux ---");
+        iprintf("\x1b[4;6HTu saldo: %d monedas | %d R$", saldo_monedas, saldo_robux);
+        for (int i = 0; i < num_paquetes; i++) {
+            iprintf("\x1b[%d;8H%d R$ - %d monedas", 6+i*2, robux_packs[i], precios[i]);
+            if (option == i) draw_cursor(6, 6+i*2);
+        }
+        // Opción de premium
+        if (es_premium) {
+            iprintf("\x1b[%d;8H[PREMIUM ACTIVADO]", 6+num_paquetes*2);
+        } else {
+            iprintf("\x1b[%d;8HComprar Premium - %d R$", 6+num_paquetes*2, premium_precio);
+            if (option == premium_option) draw_cursor(6, 6+num_paquetes*2);
+        }
+        iprintf("\x1b[14;4HA: Comprar  B: Volver  Arriba/Abajo: Mover");
+        VBlankIntrWait();
+        scanKeys();
+        u16 keys = keysDownRepeat();
+        int max_option = es_premium ? num_paquetes-1 : num_paquetes;
+        if ((keys & KEY_DOWN) && option < max_option) option++;
+        if ((keys & KEY_UP) && option > 0) option--;
+        if (keys & KEY_B) salir = 1;
+        if (keys & KEY_A) {
+            if (option < num_paquetes) {
+                if (saldo_monedas >= precios[option]) {
+                    saldo_monedas -= precios[option];
+                    saldo_robux += robux_packs[option];
+                    save_progress();
+                    iprintf("\x1b[16;4H¡Compra exitosa! +%d R$", robux_packs[option]);
+                } else {
+                    iprintf("\x1b[16;4HNo tienes suficientes monedas");
+                }
+            } else if (option == premium_option && !es_premium) {
+                if (saldo_robux >= premium_precio) {
+                    saldo_robux -= premium_precio;
+                    es_premium = 1;
+                    save_progress();
+                    iprintf("\x1b[16;4H¡Ahora eres usuario PREMIUM!");
+                } else {
+                    iprintf("\x1b[16;4HNo tienes suficientes Robux para premium");
+                }
+            }
+            VBlankIntrWait();
+            for (int i = 0; i < 60; i++) VBlankIntrWait();
         }
     }
     show_user_home(username);
@@ -609,4 +702,24 @@ void juego_obby_coins(const char* username) {
         }
     }
     show_games(username);
+}
+
+// --- Guardado/carga de progreso con premium ---
+void save_progress() {
+    FILE* f = fopen("progress.txt", "w");
+    if (f) {
+        fprintf(f, "%d %d %d\n", saldo_monedas, saldo_robux, es_premium);
+        for (int i = 0; i < NUM_ITEMS; i++) fprintf(f, "%d %d ", items[i].comprado, items[i].equipado);
+        fprintf(f, "\n");
+        fclose(f);
+    }
+}
+
+void load_progress() {
+    FILE* f = fopen("progress.txt", "r");
+    if (f) {
+        fscanf(f, "%d %d %d", &saldo_monedas, &saldo_robux, &es_premium);
+        for (int i = 0; i < NUM_ITEMS; i++) fscanf(f, "%d %d ", &items[i].comprado, &items[i].equipado);
+        fclose(f);
+    }
 }
