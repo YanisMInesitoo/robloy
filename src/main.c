@@ -98,7 +98,6 @@ const char keyboard[KEYBOARD_ROWS][KEYBOARD_COLS+1] = {
 void load_account() {}
 void load_promocodes() {}
 void load_usuarios_especiales() {}
-void load_progress() {}
 
 // --- Funciones de carga ---
 void load_account();
@@ -371,7 +370,6 @@ void show_user_home(const char* username) {
 }
 
 void show_settings(const char* username) {
-    int option = 0;
     while (1) {
         consoleClear();
         iprintf("\x1b[2;10H--- Configuración ---");

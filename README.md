@@ -90,3 +90,6 @@ GPL 3.0
 
 ## SPOIL33R
 - En la 1.002 estaran los amigos
+
+## 🏅 Primer cartucho vendido
+- El primer cartucho físico de Robloy fue vendido a un sev1llano. ¡Gracias por apoyar el desarrollo homebrew! 🎉
