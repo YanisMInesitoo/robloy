@@ -24,7 +24,7 @@ $(TARGET).elf: $(OBJ)
 	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
 
 $(TARGET).gba: $(TARGET).elf
-	@$(DEVKITPRO)/tools/bin/gbafix $<
+	@$(DEVKITPRO)/tools/bin/gbafix $< -tROBLOY -cRL01 -mYM -r00
 	@cp $< $@
 
 clean:

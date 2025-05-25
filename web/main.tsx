@@ -7,6 +7,13 @@ const App = () => (
     <header>
       <h1>Robloy <span className="pixel">🎮✨</span></h1>
       <p className="subtitle">¡El Roblox retro para Game Boy Advance!</p>
+      <p className="dominio">
+        🌐 <b>
+          <a href="https://robloy.org" target="_blank" rel="noopener noreferrer" style={{ color: "#00ffe7", textDecoration: "underline" }}>
+            robloy.org
+          </a>
+        </b> (próximamente)
+      </p>
     </header>
     <nav>
       <a href="#descarga">Descarga</a>

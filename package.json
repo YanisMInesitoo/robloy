@@ -1,0 +1,24 @@
+{
+  "name": "robloy",
+  "version": "1.0.0",
+  "description": "Robloy es un juego hecho en C inspirado en Roblox para Game Boy Advance. 🕹️",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YanisMInesitoo/robloy.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/YanisMInesitoo/robloy/issues"
+  },
+  "homepage": "https://github.com/YanisMInesitoo/robloy#readme",
+  "dependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  }
+}

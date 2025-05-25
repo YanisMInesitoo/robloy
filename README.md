@@ -91,7 +91,7 @@ GPL 3.0
 ## SPOIL33R
 - En la 1.002 estaran los amigos
 
-## Cambios en la versión 1.011
+## Cambios en la versión 1.0.11
 
 - Ahora el guardado de progreso (monedas, Robux, premium, ítems) se realiza en la SRAM de la consola, eliminando la necesidad de archivos externos para el progreso.
 - Esta versión está adaptada para funcionar en más dispositivos humildes y flashcarts, incluyendo aquellos que solo soportan guardado SRAM (como la R36S y clones).
