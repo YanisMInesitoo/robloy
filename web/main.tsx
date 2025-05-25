@@ -25,7 +25,7 @@ const App = () => (
       <section id="descarga">
         <h2>📥 Descarga</h2>
         <p>
-          <a className="btn" href="../robloy.gba" download>⬇️ Descargar ROM (.gba)</a>
+          <a className="btn" href="../0000robloy_1.0.11.gba" download>⬇️ Descargar ROM (.gba)</a>
         </p>
         <p>
           <a className="btn" href="../README.md" download>📖 Manual y detalles</a>

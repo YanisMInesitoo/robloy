@@ -696,7 +696,11 @@ void juego_rivales_hachas(const char* username) {
             } else if (keys & KEY_R) {
                 int dmg = 1 + fuerza;
                 vida_bot -= dmg;
-                snprintf(mensaje, sizeof(mensaje), "¡Atacas con %d de daño!", dmg);
+                // Usar un buffer más grande para evitar truncamiento
+                char temp[48];
+                snprintf(temp, sizeof(temp), "¡Atacas con %d de daño!", dmg);
+                strncpy(mensaje, temp, sizeof(mensaje)-1);
+                mensaje[sizeof(mensaje)-1] = '\0';
                 fuerza = 0;
                 turno = 0;
             } else if (keys & KEY_B) {
@@ -787,3 +791,7 @@ void load_progress() {
         }
     }
 }
+
+#ifndef SRAM
+#define SRAM ((volatile unsigned char*)0x0E000000)
+#endif
