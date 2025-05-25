@@ -91,5 +91,13 @@ GPL 3.0
 ## SPOIL33R
 - En la 1.002 estaran los amigos
 
+## Cambios en la versión 1.011
+
+- Ahora el guardado de progreso (monedas, Robux, premium, ítems) se realiza en la SRAM de la consola, eliminando la necesidad de archivos externos para el progreso.
+- Esta versión está adaptada para funcionar en más dispositivos humildes y flashcarts, incluyendo aquellos que solo soportan guardado SRAM (como la R36S y clones).
+- Ya no es necesario el archivo `progress.txt` para guardar el avance.
+
+> **Nota:** El sistema de cuentas y login sigue usando archivos, pero el progreso del usuario es totalmente compatible con hardware real y la mayoría de flashcarts.
+
 ## 🏅 Primer cartucho vendido
 - El primer cartucho físico de Robloy fue vendido a un sev1llano. ¡Gracias por apoyar el desarrollo homebrew! 🎉

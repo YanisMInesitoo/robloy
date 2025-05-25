@@ -749,22 +749,41 @@ void juego_obby_coins(const char* username) {
     show_games(username);
 }
 
-// --- Guardado/carga de progreso con premium ---
+// --- Guardado/carga de progreso en SRAM ---
+// Estructura persistente para guardar progreso
+typedef struct {
+    int saldo_monedas;
+    int saldo_robux;
+    int es_premium;
+    int items_comprado[NUM_ITEMS];
+    int items_equipado[NUM_ITEMS];
+} RobloySaveData;
+
+#define ROBLOY_SRAM_ADDR ((RobloySaveData*)SRAM)
+
 void save_progress() {
-    FILE* f = fopen("progress.txt", "w");
-    if (f) {
-        fprintf(f, "%d %d %d\n", saldo_monedas, saldo_robux, es_premium);
-        for (int i = 0; i < NUM_ITEMS; i++) fprintf(f, "%d %d ", items[i].comprado, items[i].equipado);
-        fprintf(f, "\n");
-        fclose(f);
+    RobloySaveData data;
+    data.saldo_monedas = saldo_monedas;
+    data.saldo_robux = saldo_robux;
+    data.es_premium = es_premium;
+    for (int i = 0; i < NUM_ITEMS; i++) {
+        data.items_comprado[i] = items[i].comprado;
+        data.items_equipado[i] = items[i].equipado;
     }
+    memcpy((void*)ROBLOY_SRAM_ADDR, &data, sizeof(RobloySaveData));
 }
 
 void load_progress() {
-    FILE* f = fopen("progress.txt", "r");
-    if (f) {
-        fscanf(f, "%d %d %d", &saldo_monedas, &saldo_robux, &es_premium);
-        for (int i = 0; i < NUM_ITEMS; i++) fscanf(f, "%d %d ", &items[i].comprado, &items[i].equipado);
-        fclose(f);
+    RobloySaveData data;
+    memcpy(&data, (void*)ROBLOY_SRAM_ADDR, sizeof(RobloySaveData));
+    // Validar datos (simple: saldo_monedas no puede ser negativo ni excesivo)
+    if (data.saldo_monedas >= 0 && data.saldo_monedas < 10000000) {
+        saldo_monedas = data.saldo_monedas;
+        saldo_robux = data.saldo_robux;
+        es_premium = data.es_premium;
+        for (int i = 0; i < NUM_ITEMS; i++) {
+            items[i].comprado = data.items_comprado[i];
+            items[i].equipado = data.items_equipado[i];
+        }
     }
 }
