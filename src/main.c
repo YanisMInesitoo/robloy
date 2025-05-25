@@ -94,10 +94,11 @@ const char keyboard[KEYBOARD_ROWS][KEYBOARD_COLS+1] = {
     "MNOPQR90ZX"
 };
 
-// --- Funciones de carga vacías para evitar error de linker ---
+// --- Funciones de carga vacías para evitar crash en hardware/emulador ---
 void load_account() {}
 void load_promocodes() {}
 void load_usuarios_especiales() {}
+void load_progress() {}
 
 // --- Funciones de carga ---
 void load_account();

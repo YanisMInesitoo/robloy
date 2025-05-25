@@ -56,7 +56,7 @@ Robloy es un juego hecho en C inspirado en Roblox para Game Boy Advance. 🕹️
 - 🧑‍💻 Código fuente organizado y fácil de modificar.
 
 ## 🌐 ¿Se puede jugar online?
-No, actualmente **no se puede jugar online de ninguna forma** en Robloy (versión 1.002). El modo online se intentará implementar en la versión 1.003. Por ahora, todo el progreso, minijuegos y funciones son completamente offline.
+No, actualmente **no se puede jugar online de ninguna forma** en Robloy (versión 1.002 o 1.0). El modo online se intentará implementar en la versión 1.003. Por ahora, todo el progreso, minijuegos y funciones son completamente offline.
 
 ## 🛠️ Compilación
 1. 📦 Instala devkitPro: https://devkitpro.org/
@@ -87,3 +87,6 @@ No, actualmente **no se puede jugar online de ninguna forma** en Robloy (versió
 
 ## 📜 Licencia
 GPL 3.0
+
+## SPOIL33R
+- En la 1.002 estaran los amigos
