@@ -1,0 +1,13 @@
+# Makefile para Robloy GBC (GBDK-2020)
+PROJECT = robloy_gbc
+SRC = src/main_gbc.c
+CC = lcc
+CFLAGS = -Wl-j
+
+all: $(PROJECT).gbc
+
+$(PROJECT).gbc: $(SRC)
+	$(CC) $(CFLAGS) -o $@ $<
+
+clean:
+	del /Q *.gb *.o *.lst *.map *.sym

@@ -25,7 +25,7 @@ const App = () => (
       <section id="descarga">
         <h2>📥 Descarga</h2>
         <p>
-          <a className="btn" href="../0000robloy_1.0.11.gba" download>⬇️ Descargar ROM (.gba)</a>
+          <a className="btn" href="../0000robloy_1.0.1.2.gba" download>⬇️ Descargar ROM (.gba)</a>
         </p>
         <p>
           <a className="btn" href="../README.md" download>📖 Manual y detalles</a>
@@ -35,10 +35,10 @@ const App = () => (
         <h2>🕹️ Cómo jugar en tu GBA</h2>
         <ol>
           <li>💾 Copia <b>robloy.gba</b> a la raíz de tu microSD (<b>EASYROMS</b> o similar).</li>
-          <li>📝 Añade <b>usuarios.txt</b> y <b>promocodes.txt</b> si quieres cuentas y promocodes.</li>
+          <li>✅ ¡No necesitas ningún archivo extra! Usuarios y promocodes ya están incluidos.</li>
           <li>🔌 Inserta la microSD en tu flashcart y ¡a jugar! 🚀</li>
         </ol>
-        <p className="tip">💡 El progreso se guarda automáticamente en la SRAM. ¡No necesitas archivos extra! 🧠</p>
+        <p className="tip">💡 El progreso se guarda automáticamente en la SRAM. ¡100% standalone y máxima compatibilidad! 🧠</p>
       </section>
       <section id="caracteristicas">
         <h2>✨ Características</h2>

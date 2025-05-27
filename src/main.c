@@ -66,10 +66,52 @@ ItemTienda items[NUM_ITEMS] = {
     {"Dominus Oro", 350, 0, 0, 0},
     {"Dominus Fuego", 400, 0, 0, 0}
 };
-Promocode promocodes[MAX_PROMOCODES];
-int num_promocodes = 0;
+Promocode promocodes[] = {
+    {"A10F25G7XD", "+10 ROBUX"},
+    {"FXD2789H25", "+25 ROBUX"},
+    {"C2R2JOD3RN", "+40 ROBUX"},
+    {"XYC4603RX0", "+55 ROBUX"},
+    {"CHAMBA8XRX", "+70 ROBUX"},
+    {"CAPITOROXD", "+80 ROBUX"},
+    {"XD4XBROO42", "+200 ROBUX"},
+    {"WEBOXXXX12", "SOMBRERO +200 MONEDAS"},
+    {"X201FGH123", "ZAPAS +5 ROBUX"},
+    {"12FGH129HD", "ZAPAS DE ORO"},
+    {"XDXDGH12DH", "SOMBRERO DE ORO"},
+    {"BRORBRORXD", "+300 MONEDAS"},
+    {"SOXXCHAMBA", "+500 MONEDAS"},
+    {"H9T0XD810D", "+1000 MONEDAS"},
+    {"H9T0XD8102", "+2000 MONEDAS"},
+    {"H9T0XD810H", "+3500 MONEDAS"},
+    {"HDXD1024XD", "+5000 MONEDAS"},
+    {"CAPA123456", "CAPA CONSEGUIDA"},
+    {"ESPADA2025", "ESPADA CONSEGUIDA"},
+    {"MASCARA777", "MÁSCARA CONSEGUIDA"},
+    {"DOMDIAMANTE", "DOMINUS DIAMANTE CONSEGUIDO"},
+    {"DOMESMERALD", "DOMINUS ESMERALDA CONSEGUIDO"},
+    {"DOMORO2025", "DOMINUS ORO CONSEGUIDO"},
+    {"DOMFUEGO99", "DOMINUS FUEGO CONSEGUIDO"},
+};
+int num_promocodes = sizeof(promocodes)/sizeof(promocodes[0]);
 UsuarioEspecial usuarios_especiales[MAX_USUARIOS_ESPECIALES];
 int num_usuarios_especiales = 0;
+
+// --- Usuarios fijos en el binario ---
+typedef struct {
+    char nombre[13];
+    char pass[7];
+} UsuarioRobloy;
+
+UsuarioRobloy usuarios_fijos[] = {
+    {"Axelo907", "FGH2YH"},
+    {"byYanis", "02YYH2"},
+    {"xXBacon_Jihan", "62HXY2"}, // Truncado a 12 caracteres
+    {"pioelcapooo", "H24H26"},
+    {"liamsamu4", "XDYH2D"},
+    {"arti", "ARX20D"},
+    {"tutifruti_61", "X2432I"}, // Truncado a 12 caracteres
+};
+int num_usuarios_fijos = sizeof(usuarios_fijos)/sizeof(usuarios_fijos[0]);
 
 // --- Prototipos de funciones principales ---
 void input_password();
@@ -160,23 +202,24 @@ void input_password() {
     }
     consoleClear();
     iprintf("\x1b[10;8HContraseña: %s", input);
-    // Leer archivo de cuenta y validar contraseña
-    FILE* f = fopen("account.txt", "r");
-    char file_username[20] = "";
-    char file_password[16] = "";
+    // Validar contra usuarios fijos y usuario temporal
     int found = 0;
-    if (f) {
-        fgets(file_username, sizeof(file_username), f);
-        fgets(file_password, sizeof(file_password), f);
-        // Eliminar salto de línea
-        file_password[strcspn(file_password, "\r\n")] = 0;
-        fclose(f);
-        if (strcmp(input, file_password) == 0) {
+    char found_username[13] = "";
+    // Buscar en usuarios fijos
+    for (int i = 0; i < num_usuarios_fijos; i++) {
+        if (strcmp(input, usuarios_fijos[i].pass) == 0) {
             found = 1;
+            strcpy(found_username, usuarios_fijos[i].nombre);
+            break;
         }
     }
+    // Si no está, buscar en usuario temporal (última cuenta creada en RAM)
+    if (!found && last_password[0] && strcmp(input, last_password) == 0) {
+        found = 1;
+        strcpy(found_username, last_username);
+    }
     if (found) {
-        show_user_home(file_username);
+        show_user_home(found_username);
     } else {
         iprintf("\x1b[12;8HContraseña incorrecta");
         VBlankIntrWait();
@@ -185,20 +228,7 @@ void input_password() {
     }
 }
 
-void save_account(const char* username, const char* password) {
-    // Guardar en account.txt (última cuenta usada)
-    FILE* f = fopen("account.txt", "w");
-    if (f) {
-        fprintf(f, "%s\n%s\n", username, password);
-        fclose(f);
-    }
-    // Añadir a usuarios.txt (todas las cuentas)
-    FILE* fu = fopen("usuarios.txt", "a");
-    if (fu) {
-        fprintf(fu, "%s:%s\n", username, password);
-        fclose(fu);
-    }
-}
+void save_account(const char* username, const char* password) {}
 
 void input_username() {
     char username[13] = "";
@@ -252,11 +282,9 @@ void input_username() {
         password[i] = charset[rand() % 36];
     }
     password[6] = '\0';
-    // Guardar usuario y contraseña globalmente
+    // Guardar usuario y contraseña globalmente (solo RAM)
     strcpy(last_username, username);
     strcpy(last_password, password);
-    // Guardar en la tarjeta de memoria
-    save_account(username, password);
     consoleClear();
     iprintf("\x1b[8;6HNombre creado: %s", username);
     iprintf("\x1b[10;6HTu contraseña es: %s", password);
@@ -479,7 +507,7 @@ void show_robux(const char* username) {
             iprintf("\x1b[%d;8HComprar Premium - %d monedas", 6+num_paquetes*2, premium_precio);
             if (option == premium_option) draw_cursor(6, 6+num_paquetes*2);
         }
-        iprintf("\x1b[14;4HA: Comprar  B: Volver  Arriba/Abajo: Mover");
+        iprintf("\x1b[14;4HA: Comprar  B: Volver  Arriba/Abajo: Mover  Y: Código de recarga");
         VBlankIntrWait();
         scanKeys();
         u16 keys = keysDownRepeat();
@@ -511,6 +539,9 @@ void show_robux(const char* username) {
             }
             VBlankIntrWait();
             for (int i = 0; i < 60; i++) VBlankIntrWait();
+        }
+        if (keys & KEY_Y) {
+            redeem_promocode(username);
         }
     }
     show_user_home(username);

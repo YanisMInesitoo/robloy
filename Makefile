@@ -1,6 +1,6 @@
 # Robloy - Makefile para Game Boy Advance
 
-TARGET := 0000robloy_1.0.11
+TARGET := 0000robloy_1.0.1.2
 BUILD := build
 SRC := src
 OBJ := $(BUILD)/main.o
