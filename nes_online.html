@@ -1,0 +1,32 @@
+<!--
+  Robloy NES Online Emulator
+  Usa jsnes (https://github.com/bfirsh/jsnes) para emular la ROM NES en la web.
+-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=320, initial-scale=1.0">
+  <title>Robloy NES Online</title>
+  <style>
+    body { background: #181c1f; color: #fff; font-family: sans-serif; text-align: center; }
+    .emulator-container { margin: 2em auto; max-width: 340px; }
+    .btn { background: #00ffe7; color: #181c1f; border: none; padding: 0.7em 1.2em; border-radius: 8px; font-size: 1.1em; cursor: pointer; margin: 1em 0; }
+    .btn:hover { background: #00bfae; }
+    .info { margin: 1em auto; max-width: 340px; font-size: 0.95em; color: #b0e0e6; }
+  </style>
+</head>
+<body>
+  <h1>Robloy NES <span style="color:#00ffe7">Online</span> 🎮</h1>
+  <div class="emulator-container">
+    <iframe id="nesemu" title="Robloy NES Emulator" width="320" height="240" frameborder="0" allowfullscreen src="https://jsnes.org/?rom=https://raw.githubusercontent.com/YanisMinesitoo/robloy/main/robloy_nes.nes"></iframe>
+    <div class="info">
+      <b>Controles:</b> Z/X/A/S/B/Enter/Flechas<br>
+      <b>ROM:</b> robloy_nes.nes (versión demo)<br>
+      <b>Emulador:</b> <a href="https://github.com/bfirsh/jsnes" target="_blank" rel="noopener">jsnes</a>
+    </div>
+    <button class="btn" onclick="document.getElementById('nesemu').src=document.getElementById('nesemu').src">🔄 Reiniciar juego</button>
+  </div>
+  <p style="margin-top:2em;font-size:0.9em;color:#aaa">Robloy NES © 2025 | Powered by jsnes</p>
+</body>
+</html>

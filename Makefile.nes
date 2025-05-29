@@ -1,0 +1,13 @@
+# Makefile para Robloy NES (cc65)
+PROJECT = robloy_nes
+SRC = src/main_nes.c
+CC = cl65
+CFLAGS = --target nes
+
+all: $(PROJECT).nes
+
+$(PROJECT).nes: $(SRC)
+	$(CC) $(CFLAGS) -o $@ $<
+
+clean:
+	del /Q *.nes *.o *.map *.lst *.sym

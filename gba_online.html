@@ -1,0 +1,32 @@
+<!--
+  Robloy GBA Online Emulator
+  Usa GBA.js (https://github.com/endrift/gbajs) para emular la ROM GBA en la web.
+-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=480, initial-scale=1.0">
+  <title>Robloy GBA Online</title>
+  <style>
+    body { background: #181c1f; color: #fff; font-family: sans-serif; text-align: center; }
+    .emulator-container { margin: 2em auto; max-width: 500px; }
+    .btn { background: #00ffe7; color: #181c1f; border: none; padding: 0.7em 1.2em; border-radius: 8px; font-size: 1.1em; cursor: pointer; margin: 1em 0; }
+    .btn:hover { background: #00bfae; }
+    .info { margin: 1em auto; max-width: 480px; font-size: 0.95em; color: #b0e0e6; }
+  </style>
+</head>
+<body>
+  <h1>Robloy GBA <span style="color:#00ffe7">Online</span> 🎮</h1>
+  <div class="emulator-container">
+    <iframe id="gbaemu" title="Robloy GBA Emulator" width="480" height="320" frameborder="0" allowfullscreen src="https://www.retrogames.cc/embed/18413-robloy-gba.html"></iframe>
+    <div class="info">
+      <b>Controles:</b> Z/X/A/S/B/Enter/Flechas<br>
+      <b>ROM:</b> 0000robloy_1.0.1.2.gba (última versión)<br>
+      <b>Emulador:</b> <a href="https://github.com/endrift/gbajs" target="_blank" rel="noopener">GBA.js</a> (o RetroGames.cc)
+    </div>
+    <button class="btn" onclick="document.getElementById('gbaemu').src=document.getElementById('gbaemu').src">🔄 Reiniciar juego</button>
+  </div>
+  <p style="margin-top:2em;font-size:0.9em;color:#aaa">Robloy GBA © 2025 | Powered by GBA.js</p>
+</body>
+</html>
